@@ -43,11 +43,15 @@ namespace SqlInjector
     {
         public static string GetConnectionString()
         {   
-            // Grab environment variables and see if they are present
+            // Grab environment variables and see if they are present & valid
             string? server = Environment.GetEnvironmentVariable("DB_SERVER");
             string? database = Environment.GetEnvironmentVariable("DB_DATABASE");
             string? user = Environment.GetEnvironmentVariable("DB_USER");
             string? password = Environment.GetEnvironmentVariable("DB_PASSWORD");
+            if (!uint.TryParse(Environment.GetEnvironmentVariable("DB_PORT"), out uint port))
+            {
+                throw new Exception("SqlInjector: Missing or invalid DB_SERVER environment variable needed for database connection!");
+            }
 
             // Check if any of the needed database credentials are missing
             if (server == null) {
@@ -67,7 +71,7 @@ namespace SqlInjector
             }
 
             // Build connection string
-            string connectionString = $"Server={server};Database={database};User={user};Password={password};"; 
+            string connectionString = $"Server={server};Port={port};Database={database};User={user};Password={password};"; 
 
             return connectionString;
         }
